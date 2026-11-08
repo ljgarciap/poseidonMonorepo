@@ -58,4 +58,5 @@ npm run db:reset         # borra el volumen y recrea todo
 
 ## Estado
 - F0: T0.1 monorepo ✅ · T0.2 compose + migración inicial + RLS + test de aislamiento ✅ · T0.3 `docs/contrato-infra.md` ✅ (pendiente respuesta del tercero)
-- Siguiente: F1 `rndc-client` (bloqueado en parte por el diccionario de variables vía `wstest`, D6)
+- F1: T1.1 `rndc-client` transporte SOAP/XML ✅ (XML, sobre rpc/encoded ISO-8859-1, hosts por proceso, errores tipados, bitácora sin clave, servidor RNDC simulado en tests)
+- Siguiente: T1.2–T1.5 (maestros, remesa, manifiesto, cumplidos, anulaciones) — bloqueado por el diccionario de variables vía `wstest` (D6). **Pendiente confirmar el formato real de error del RNDC** (hoy el parser acepta `<ErrorMSG>` o texto plano).
