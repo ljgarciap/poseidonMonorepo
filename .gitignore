@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+coverage/
+*.log
+.DS_Store
+
+# Insumos de la empresa (datos personales/comerciales): no van al repo
+/*.xlsx
+/*.jpeg
+/*.jpg
+/Manifiesto*.pdf
+/GUIA*.pdf

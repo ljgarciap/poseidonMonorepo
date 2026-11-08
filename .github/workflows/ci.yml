@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [dev, main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [20, 22]   # el código debe funcionar en ambas (decisión D4)
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: poseidon_owner
+          POSTGRES_PASSWORD: poseidon_owner_dev
+          POSTGRES_DB: poseidon
+        ports: ["5433:5432"]
+        options: >-
+          --health-cmd "pg_isready -U poseidon_owner -d poseidon"
+          --health-interval 3s --health-timeout 3s --health-retries 20
+    env:
+      DATABASE_URL_OWNER: postgres://poseidon_owner:poseidon_owner_dev@localhost:5433/poseidon
+      DATABASE_URL_APP: postgres://poseidon_app:poseidon_app_dev@localhost:5433/poseidon
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - name: Crear roles locales (mismo script que docker-compose)
+        run: PGPASSWORD=poseidon_owner_dev psql -h localhost -p 5433 -U poseidon_owner -d poseidon -f docker/postgres/init/01-roles.sql
+      - run: touch .env && npm run db:migrate
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
