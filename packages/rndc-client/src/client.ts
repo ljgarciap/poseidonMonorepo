@@ -46,6 +46,7 @@ export interface RndcClient {
 }
 
 const DEFAULT_TIMEOUT_MS = 30_000;
+const DOCUMENTO_NO_ENCONTRADO = /RNDC11\b|Documento no encontrado/i;
 
 export function createRndcClient(opts: RndcClientOptions): RndcClient {
   const doFetch = opts.fetch ?? fetch;
@@ -132,7 +133,15 @@ export function createRndcClient(opts: RndcClientOptions): RndcClient {
         documento,
         ...(rango ? { documentorango: rango } : {}),
       });
-      const r = await call(tipo, procesoid, xml);
+      let r;
+      try {
+        r = await call(tipo, procesoid, xml);
+      } catch (e) {
+        // El RNDC responde "Error RNDC11: Documento no encontrado" cuando una consulta no tiene resultados:
+        // para el llamador es una lista vacía, no un fallo.
+        if (e instanceof RndcRechazoError && e.mensajes.some((m) => DOCUMENTO_NO_ENCONTRADO.test(m))) return [];
+        throw e;
+      }
       if (r.tipo !== 'documentos') throw new RndcRespuestaInvalidaError('Se esperaban documentos', JSON.stringify(r));
       return r.documentos;
     },

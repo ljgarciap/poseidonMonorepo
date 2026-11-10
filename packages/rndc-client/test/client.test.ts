@@ -107,7 +107,21 @@ describe('consultar', () => {
     expect(x).toContain('<documentorango>');
   });
 
-  it('consulta sin resultados devuelve lista vacía', async () => {
+  it('"Error RNDC11: Documento no encontrado" (respuesta real del RNDC de pruebas) es lista vacía, no fallo', async () => {
+    fake = await startFakeRndc(() => ({
+      body: '<?xml version="1.0" encoding="ISO-8859-1" ?>\r\n<root>\r\n<ErrorMSG>Error RNDC11: Documento no encontrado. Tipo:3 Proceso:4</ErrorMSG>\r\n</root>\r\n',
+    }));
+    expect(await clientFor(fake.baseUrl).consultar({ procesoid: 4, campos: ['INGRESOID'], documento: { NUMNITEMPRESATRANSPORTE: '1' } })).toEqual([]);
+  });
+
+  it('otros errores en una consulta siguen siendo rechazo', async () => {
+    fake = await startFakeRndc(() => ({ body: '<root><ErrorMSG>Error RNDC01: Usuario o clave inválidos</ErrorMSG></root>' }));
+    await expect(
+      clientFor(fake.baseUrl).consultar({ procesoid: 4, campos: ['INGRESOID'], documento: { NUMNITEMPRESATRANSPORTE: '1' } }),
+    ).rejects.toBeInstanceOf(RndcRechazoError);
+  });
+
+  it('consulta con root vacío devuelve lista vacía', async () => {
     fake = await startFakeRndc(() => ({ body: '<root></root>' }));
     expect(await clientFor(fake.baseUrl).consultar({ procesoid: 4, campos: ['INGRESOID'], documento: { NUMNITEMPRESATRANSPORTE: '1' } })).toEqual([]);
   });

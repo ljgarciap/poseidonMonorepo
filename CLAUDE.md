@@ -59,4 +59,5 @@ npm run db:reset         # borra el volumen y recrea todo
 ## Estado
 - F0: T0.1 monorepo ✅ · T0.2 compose + migración inicial + RLS + test de aislamiento ✅ · T0.3 `docs/contrato-infra.md` ✅ (pendiente respuesta del tercero)
 - F1: T1.1 `rndc-client` transporte SOAP/XML ✅ (XML, sobre rpc/encoded ISO-8859-1, hosts por proceso, errores tipados, bitácora sin clave, servidor RNDC simulado en tests)
-- Siguiente: T1.2–T1.5 (maestros, remesa, manifiesto, cumplidos, anulaciones) — bloqueado por el diccionario de variables vía `wstest` (D6). **Pendiente confirmar el formato real de error del RNDC** (hoy el parser acepta `<ErrorMSG>` o texto plano).
+- Siguiente: T1.2–T1.5 (maestros, remesa, manifiesto, cumplidos, anulaciones). Desbloqueado el diccionario (D6); falta descubrir obligatoriedad/formatos registrando en pruebas. Formato de error confirmado contra pruebas: `<ErrorMSG>Error RNDCnn: …</ErrorMSG>`; una consulta sin resultados responde `RNDC11: Documento no encontrado` (el cliente lo devuelve como lista vacía).
+- Diccionario de variables extraído de wstest → `docs/rndc-diccionario.md`. Sondeo de solo lectura: `npx tsx --env-file=.env scripts/rndc-probe.ts <proceso> <CAMPOS> [CLAVE=valor]` (credenciales de PRUEBAS en `.env`, nunca en el repo).
