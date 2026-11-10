@@ -19,7 +19,7 @@ Reemplaza los Excel de control de viajes y la radicación manual en el portal de
 packages/
   rndc-client/   # cliente SOAP/XML (+REST de consultas) del RNDC, sin dependencias de dominio
   core/          # dominio: viaje, remesa, manifiesto, cumplidos, tarifas, tenancy
-  api/           # handlers Lambda (HTTP) + workers de cola
+  api/           # una Lambda por endpoint: src/handlers/<recurso>/<accion>.ts (+ worker de cola); lógica en core/
   db/            # migraciones, seeds, tipos Kysely
 apps/web/        # React
 docs/            # arquitectura, specs, ADRs, contrato-infra, referencia RNDC
@@ -40,6 +40,7 @@ Facturación (fase A: proveedor tecnológico DIAN; fase B: factura electrónica 
 
 ## Referencias
 - `docs/arquitectura.md` — diseño, modelo de datos, flujo del viaje, spec MVP y backlog
+- `docs/api-contrato.md` — contrato de APIs por Lambda (borrador v0). **Regla: el contrato de cada endpoint se aprueba antes de implementar su handler.**
 - `docs/referencia-rndc.md` — resumen de la guía RNDC V6
 - Insumos originales: PDF de la guía RNDC V6, manifiesto de ejemplo, Excel de operación, nota manuscrita del flujo (carpeta raíz del proyecto)
 
